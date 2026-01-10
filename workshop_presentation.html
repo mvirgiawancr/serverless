@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshop Serverless Architecture - UBSI 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8fafc;
+            overflow: hidden;
+            color: #334155;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .brand-font {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+            animation: fadeIn 0.4s ease-out;
+            position: relative;
+            flex-direction: column;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --------------------------
+           SECTION THEMES 
+           -------------------------- */
+
+        /* 1. Cover & Dividers (Deep Blue) */
+        .theme-cover {
+            background-color: #1E3A8A;
+            color: white;
+            background-image: radial-gradient(circle at 80% 90%, rgba(249, 115, 22, 0.2) 0%, transparent 40%);
+        }
+
+        /* 2. Content Slides (Light) */
+        .theme-content {
+            background-color: #f8fafc;
+        }
+
+        /* 3. Workshop/Lab Slides (Orange Accent) */
+        .theme-lab {
+            background-color: #fff7ed;
+            /* Light orange tint */
+        }
+
+        /* 4. Closing (Deep Blue) */
+        .theme-closing {
+            background-color: #172554;
+            color: white;
+        }
+
+        /* --------------------------
+           LAYOUT COMPONENTS
+           -------------------------- */
+
+        /* Header */
+        .slide-header {
+            background: white;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #F97316;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            z-index: 20;
+            flex-shrink: 0;
+            height: 90px;
+        }
+
+        .section-tag {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #94a3b8;
+            margin-bottom: 0.2rem;
+            display: block;
+        }
+
+        /* Main Content Area */
+        .slide-body {
+            flex: 1;
+            padding: 2.5rem 4rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            gap: 4rem;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .slide-body.centered {
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Typography */
+        .slide-title {
+            font-weight: 800;
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            color: #1E3A8A;
+        }
+
+        .slide-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #475569;
+        }
+
+        .highlight {
+            color: #F97316;
+            font-weight: 700;
+        }
+
+        /* Cards & Lists */
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bullet-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            font-size: 1.2rem;
+        }
+
+        .bullet-icon {
+            color: #3B82F6;
+            margin-right: 1rem;
+            margin-top: 0.4rem;
+        }
+
+        /* Navigation */
+        .nav-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 50;
+        }
+
+        .nav-btn {
+            background: #1E3A8A;
+            color: white;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.2rem;
+        }
+
+        .nav-btn:hover {
+            background: #F97316;
+            transform: translateY(-2px);
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 2.5rem;
+            left: 2rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #94a3b8;
+            font-size: 1.2rem;
+            background: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .toc-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            display: flex;
+        }
+
+        .toc-segment {
+            height: 100%;
+            background: #cbd5e1;
+            flex: 1;
+            margin-right: 2px;
+            transition: background 0.3s;
+        }
+
+        .toc-segment.active {
+            background: #3B82F6;
+        }
+
+        .toc-segment.past {
+            background: #1E3A8A;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =================================================================================
+         BAGIAN 1: PEMBUKA (KONTEKS & MOTIVASI)
+         ================================================================================= -->
+
+    <!-- Slide 1: Judul & Konteks -->
+    <div class="slide theme-cover active items-center justify-center relative">
+        <div class="absolute inset-0 bg-blue-900 overflow-hidden">
+            <div class="absolute -top-32 -right-32 w-96 h-96 bg-blue-600/30 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/2 left-1/4 w-64 h-64 bg-orange-500/20 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="z-10 text-center max-w-5xl px-4">
+            <div
+                class="bg-white/95 text-slate-800 px-8 py-4 rounded-2xl mb-12 inline-flex gap-8 shadow-xl items-center">
+                <img src="https://page.gensparksite.com/slides_images/4d58f7ae212023e30c160a6e41437743.webp" alt="UBSI"
+                    class="h-14">
+                <div class="h-8 w-px bg-slate-300"></div>
+                <img src="https://page.gensparksite.com/slides_images/6eca4b1f61ee60e42a8a5eb78093bd1a.png" alt="UNIKOM"
+                    class="h-14">
+            </div>
+
+            <h1 class="font-extrabold text-6xl leading-tight mb-6 drop-shadow-lg font-montserrat">
+                Cloud Computing &<br>Serverless Architecture
+            </h1>
+
+            <div class="grid grid-cols-2 gap-6 text-sm md:text-base max-w-3xl mx-auto border-t border-white/20 pt-8">
+                <div>
+                    <i class="fas fa-calendar-alt text-orange-400 mb-2 text-xl block"></i>
+                    <span class="font-bold block">14 Januari 2026</span>
+                </div>
+                <div>
+                    <i class="fas fa-user-tie text-orange-400 mb-2 text-xl block"></i>
+                    <span class="font-bold block"> Assoc. Prof. Dr. Irawan Afrianto, S.T, M.T</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Problem Framing -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 1: PEMBUKA</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Problem Framing</span>
+            </div>
+            <i class="fas fa-exclamation-triangle text-orange-500 text-2xl"></i>
+        </header>
+        <div class="slide-body">
+            <div class="flex-1">
+                <h2 class="slide-title">Kenapa Deployment Itu Sulit?</h2>
+                <p class="slide-text mb-8">
+                    Ada jurang pemisah yang besar antara <span class="highlight">"It works on my machine"</span> dengan
+                    aplikasi yang siap diakses ribuan user.
+                </p>
+
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-red-500">
+                        <h4 class="font-bold text-red-600 mb-1">Infrastructure Complexity</h4>
+                        <p class="text-sm">Setting IP, firewall, OS, runtime environment manual.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-red-500">
+                        <h4 class="font-bold text-red-600 mb-1">Scaling Nightmare</h4>
+                        <p class="text-sm">Server crash saat traffic naik, biaya mahal saat traffic sepi.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 text-center">
+                <img src="./assets/server_chaos.png"
+                    class="rounded-xl shadow-2xl max-h-[400px] border-4 border-white inline-block">
+                <p class="text-sm text-slate-500 mt-4 italic">"Developer harusnya fokus nulis kode, bukan ribet urus
+                    kabel server."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================================
+         BAGIAN 2: KONSEPTUAL CLOUD COMPUTING
+         ================================================================================= -->
+
+    <!-- Slide 3: Definisi Cloud -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 2: KONSEP DASAR</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Definisi Cloud Computing</span>
+            </div>
+            <i class="fas fa-cloud text-blue-600 text-2xl"></i>
+        </header>
+        <div class="slide-body flex-col text-center">
+            <h2 class="slide-title">Apa itu Cloud Computing?</h2>
+            <div class="bg-blue-50 border border-blue-100 p-8 rounded-2xl max-w-4xl mx-auto mb-12 shadow-sm">
+                <p class="text-2xl font-serif text-slate-700 italic leading-relaxed">
+                    "Penyampaian layanan komputasi (server, storage, database) melalui Internet ('the cloud') untuk
+                    menawarkan inovasi cepat, sumber daya fleksibel, dan skala ekonomi."
+                </p>
+                <p class="text-right text-slate-500 mt-4 text-sm font-bold">— NIST Definition</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-8 w-full max-w-5xl text-left">
+                <div class="card border-t-4 border-blue-500">
+                    <h3 class="font-bold text-lg mb-2">1. Abstraksi</h3>
+                    <p class="text-sm text-slate-600">Fisik hardware disembunyikan. Anda melihat "Virtual Resource".</p>
+                </div>
+                <div class="card border-t-4 border-blue-500">
+                    <h3 class="font-bold text-lg mb-2">2. Elastisitas</h3>
+                    <p class="text-sm text-slate-600">Kapasitas bisa membesar dan mengecil sesuai kebutuhan seketika.
+                    </p>
+                </div>
+                <div class="card border-t-4 border-blue-500">
+                    <h3 class="font-bold text-lg mb-2">3. Managed Services</h3>
+                    <p class="text-sm text-slate-600">Provider yang mengelola maintenance, security, dan power.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Prinsip Dasar -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 2: KONSEP DASAR</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Prinsip Dasar</span>
+            </div>
+        </header>
+        <div class="slide-body flex-col">
+            <h2 class="slide-title text-center w-full">Karakteristik Cloud Computing</h2>
+            <p class="text-center text-slate-600 mb-8 max-w-3xl">Tiga pilar fundamental yang membedakan cloud computing
+                dari infrastructure tradisional.</p>
+
+            <div class="grid gap-6 w-full max-w-5xl">
+                <div class="flex items-center gap-6 p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+                    <div
+                        class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center text-orange-500 text-3xl">
+                        <i class="fas fa-mouse-pointer"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-slate-800">On-Demand Self-Service</h3>
+                        <p class="text-slate-600">Klik, dan server siap dalam hitungan detik. Tanpa admin manual.
+                            Provisioning otomatis tanpa harus menghubungi tim IT.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+                    <div
+                        class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 text-3xl">
+                        <i class="fas fa-expand-alt"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-slate-800">Scalability</h3>
+                        <p class="text-slate-600">Scale UP (tambah power) atau Scale OUT (tambah jumlah unit) otomatis.
+                            Kapasitas menyesuaikan dengan beban kerja secara real-time.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+                    <div
+                        class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-500 text-3xl">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-slate-800">Automation</h3>
+                        <p class="text-slate-600">Infrastructure as Code (IaC). Server diatur lewat script, bukan klik
+                            manual. Reproducible dan version-controlled.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Model Layanan -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 2: KONSEP DASAR</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Model Layanan Cloud</span>
+            </div>
+        </header>
+        <div class="slide-body flex-col">
+            <h2 class="slide-title text-center">Pergeseran Tanggung Jawab</h2>
+            <div class="flex gap-4 w-full justify-center mt-8">
+                <!-- IaaS -->
+                <div class="flex-1 max-w-sm bg-white p-6 rounded-xl border border-slate-200">
+                    <div class="text-center font-bold text-2xl text-slate-700 bg-slate-100 py-3 rounded mb-4">IaaS</div>
+                    <p class="text-center text-xs uppercase tracking-widest text-slate-500 mb-4">Infrastructure</p>
+                    <ul class="text-sm space-y-2 mb-6">
+                        <li class="flex justify-between text-green-600 border-b border-dotted pb-1"><span>App +
+                                Data</span> <i class="fas fa-check"></i></li>
+                        <li class="flex justify-between text-green-600 border-b border-dotted pb-1"><span>Runtime</span>
+                            <i class="fas fa-check"></i>
+                        </li>
+                        <li class="flex justify-between text-green-600 border-b border-dotted pb-1"><span>OS</span> <i
+                                class="fas fa-check"></i></li>
+                        <li class="flex justify-between text-slate-400"><span>Virtualization</span> <i
+                                class="fas fa-times"></i></li>
+                        <li class="flex justify-between text-slate-400"><span>Servers</span> <i
+                                class="fas fa-times"></i></li>
+                    </ul>
+                    <p class="text-xs text-center text-slate-500">Contoh: AWS EC2</p>
+                </div>
+                <!-- PaaS -->
+                <div class="flex-1 max-w-sm bg-white p-6 rounded-xl border-t-8 border-blue-500 shadow-md">
+                    <div class="text-center font-bold text-2xl text-blue-700 bg-blue-50 py-3 rounded mb-4">PaaS</div>
+                    <p class="text-center text-xs uppercase tracking-widest text-blue-500 mb-4">Platform</p>
+                    <ul class="text-sm space-y-2 mb-6">
+                        <li class="flex justify-between text-green-600 border-b border-dotted pb-1"><span>App +
+                                Data</span> <i class="fas fa-check"></i></li>
+                        <li class="flex justify-between text-slate-400 border-b border-dotted pb-1"><span>Runtime</span>
+                            <i class="fas fa-times"></i>
+                        </li>
+                        <li class="flex justify-between text-slate-400 border-b border-dotted pb-1"><span>OS</span> <i
+                                class="fas fa-times"></i></li>
+                        <li class="flex justify-between text-slate-400"><span>Virtualization</span> <i
+                                class="fas fa-times"></i></li>
+                        <li class="flex justify-between text-slate-400"><span>Servers</span> <i
+                                class="fas fa-times"></i></li>
+                    </ul>
+                    <p class="text-xs text-center text-slate-500">Contoh: Heroku</p>
+                </div>
+                <!-- FaaS -->
+                <div
+                    class="flex-1 max-w-sm bg-white p-6 rounded-xl border-t-8 border-orange-500 shadow-xl transform scale-105">
+                    <div class="text-center font-bold text-2xl text-orange-600 bg-orange-50 py-3 rounded mb-4">FaaS
+                    </div>
+                    <p class="text-center text-xs uppercase tracking-widest text-orange-500 mb-4">Serverless</p>
+                    <ul class="text-sm space-y-2 mb-6">
+                        <li class="flex justify-between text-green-600 border-b border-dotted pb-1 font-bold">
+                            <span>Function Code</span> <i class="fas fa-check"></i>
+                        </li>
+                        <li class="flex justify-between text-slate-400 border-b border-dotted pb-1"><span>Runtime</span>
+                            <i class="fas fa-times"></i>
+                        </li>
+                        <li class="flex justify-between text-slate-400 border-b border-dotted pb-1"><span>OS</span> <i
+                                class="fas fa-times"></i></li>
+                        <li class="flex justify-between text-slate-400"><span>Virtualization</span> <i
+                                class="fas fa-times"></i></li>
+                        <li class="flex justify-between text-slate-400"><span>Servers</span> <i
+                                class="fas fa-times"></i></li>
+                    </ul>
+                    <p class="text-xs text-center text-slate-500">Contoh: AWS Lambda</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================================
+         BAGIAN 3: EVOLUSI ARSITEKTUR
+         ================================================================================= -->
+
+    <!-- Slide 6: Evolusi Arsitektur -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 3: EVOLUSI</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Evolusi Arsitektur</span>
+            </div>
+        </header>
+        <div class="slide-body flex-col">
+            <h2 class="slide-title text-center w-full">Perjalanan Arsitektur Aplikasi</h2>
+            <p class="text-center text-slate-600 mb-6 max-w-3xl">Bagaimana cara membangun aplikasi telah berevolusi dari
+                satu blok besar menjadi fungsi-fungsi kecil yang independen.</p>
+
+            <img src="./assets/cloud_evolution.png" class="max-h-[280px] mb-8 shadow-lg rounded-lg">
+
+            <div class="grid grid-cols-3 gap-8 w-full">
+                <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-server text-slate-500 text-2xl"></i>
+                        <h3 class="font-bold text-xl">Monolithic</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-3">Semua komponen aplikasi (UI, logic, database) digabung
+                        menjadi satu kesatuan besar.</p>
+                    <ul class="text-xs text-slate-500 space-y-1">
+                        <li>✓ Simple to develop awalnya</li>
+                        <li>✗ Deploy satu = deploy semua</li>
+                        <li>✗ Scaling seluruh app, bukan per-fitur</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow border border-blue-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-cubes text-blue-500 text-2xl"></i>
+                        <h3 class="font-bold text-xl text-blue-700">Microservices</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-3">Aplikasi dipecah menjadi service-service kecil yang
+                        berkomunikasi via API.</p>
+                    <ul class="text-xs text-slate-500 space-y-1">
+                        <li>✓ Independent deployment</li>
+                        <li>✓ Tech stack bisa berbeda</li>
+                        <li>✗ Kompleksitas DevOps tinggi</li>
+                    </ul>
+                </div>
+                <div class="bg-orange-50 p-6 rounded-xl shadow border-2 border-orange-400">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-cloud text-orange-500 text-2xl"></i>
+                        <h3 class="font-bold text-xl text-orange-600">Serverless</h3>
+                    </div>
+                    <p class="text-sm text-slate-700 mb-3">Fungsi-fungsi kecil yang dijalankan cloud provider. Tidak
+                        perlu manage server sama sekali.</p>
+                    <ul class="text-xs text-slate-600 space-y-1">
+                        <li>✓ Zero infrastructure management</li>
+                        <li>✓ Auto-scale per function</li>
+                        <li>✓ Pay only when code runs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Tanggung Jawab Developer -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 3: EVOLUSI</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Developer Responsibility</span>
+            </div>
+        </header>
+        <div class="slide-body flex-col">
+            <h2 class="slide-title text-center w-full">Pergeseran Tanggung Jawab Developer</h2>
+            <p class="text-center text-slate-600 mb-8 max-w-4xl">Dari mengelola infrastruktur penuh menuju fokus 100%
+                pada business logic.</p>
+
+            <div class="flex gap-8 w-full items-center">
+                <div class="flex-1 bg-slate-800 text-white p-8 rounded-2xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-6 text-slate-300">Traditional Dev Ops</h3>
+                    <ul class="space-y-4 text-slate-400 text-lg">
+                        <li><i class="fas fa-check text-red-500 w-8"></i> Provisioning Server</li>
+                        <li><i class="fas fa-check text-red-500 w-8"></i> Patching OS</li>
+                        <li><i class="fas fa-check text-red-500 w-8"></i> Config Auto-Scaling</li>
+                        <li><i class="fas fa-check text-red-500 w-8"></i> Load Balancing Config</li>
+                        <li><i class="fas fa-check text-green-500 w-8"></i> Writing Business Logic</li>
+                    </ul>
+                </div>
+                <div class="flex items-center text-4xl text-slate-300"><i class="fas fa-arrow-right"></i></div>
+                <div
+                    class="flex-1 bg-white border border-orange-200 p-8 rounded-2xl shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-orange-500 text-white text-xs px-3 py-1 font-bold uppercase">
+                        Cloud
+                        Era</div>
+                    <h3 class="text-2xl font-bold mb-6 text-orange-600">Serverless Dev</h3>
+                    <ul class="space-y-4 text-slate-600 text-lg">
+                        <li class="line-through decoration-slate-300"><i class="fas fa-times text-slate-300 w-8"></i>
+                            Provisioning Server</li>
+                        <li class="line-through decoration-slate-300"><i class="fas fa-times text-slate-300 w-8"></i>
+                            Patching OS</li>
+                        <li class="line-through decoration-slate-300"><i class="fas fa-times text-slate-300 w-8"></i>
+                            Config
+                            Auto-Scaling</li>
+                        <li class="line-through decoration-slate-300"><i class="fas fa-times text-slate-300 w-8"></i>
+                            Load
+                            Balancing Config</li>
+                        <li class="font-bold text-slate-800 bg-orange-50 p-2 rounded -mx-2"><i
+                                class="fas fa-check text-green-500 w-8"></i> Writing Business Logic</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================================
+         BAGIAN 4: SERVERLESS & EVENT-DRIVEN
+         ================================================================================= -->
+
+    <!-- Slide 8: Konsep Dasar Serverless -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 4: SERVERLESS</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Core Concepts</span>
+            </div>
+        </header>
+        <div class="slide-body flex-col">
+            <h2 class="slide-title text-center w-full">Tiga Prinsip Serverless</h2>
+            <p class="text-center text-slate-600 mb-8 max-w-3xl">Konsep inti yang mendefinisikan paradigma serverless
+                computing.</p>
+
+            <div class="grid grid-cols-1 gap-8 w-full max-w-5xl">
+                <div class="flex gap-6 items-start p-6 bg-orange-50 rounded-xl border border-orange-200">
+                    <div class="text-4xl text-orange-500 w-16 text-center"><i class="fas fa-ghost"></i></div>
+                    <div>
+                        <h3 class="font-bold text-2xl text-slate-800">1. Stateless (Ephemeral)</h3>
+                        <p class="text-slate-600 text-lg">Fungsi dibuat, dijalankan, lalu dihancurkan. Tidak ada data
+                            yang disimpan di memori server. State wajib di Database. Setiap eksekusi independen dan
+                            tidak tahu tentang eksekusi sebelumnya.</p>
+                    </div>
+                </div>
+                <div class="flex gap-6 items-start p-6 bg-blue-50 rounded-xl border border-blue-200">
+                    <div class="text-4xl text-blue-500 w-16 text-center"><i class="fas fa-bolt"></i></div>
+                    <div>
+                        <h3 class="font-bold text-2xl text-slate-800">2. Event-Driven</h3>
+                        <p class="text-slate-600 text-lg">Hanya bangun jika ada trigger (HTTP Request, DB Change,
+                            Timer). Tidak ada server yang standby idle. Fungsi "tidur" saat tidak digunakan, hemat
+                            resource dan biaya.</p>
+                    </div>
+                </div>
+                <div class="flex gap-6 items-start p-6 bg-green-50 rounded-xl border border-green-200">
+                    <div class="text-4xl text-green-500 w-16 text-center"><i class="fas fa-coins"></i></div>
+                    <div>
+                        <h3 class="font-bold text-2xl text-slate-800">3. Pay-per-Use</h3>
+                        <p class="text-slate-600 text-lg">Bayar per milidetik eksekusi. Tidak ada traffic = tagihan Rp
+                            0. Model billing yang sangat cost-efficient untuk aplikasi dengan traffic tidak konstan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Event-Driven Arch -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 4: SERVERLESS</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Event-Driven Flow</span>
+            </div>
+        </header>
+        <div class="slide-body">
+            <div class="flex-1">
+                <h2 class="slide-title">Bagaimana Serverless Bekerja?</h2>
+                <p class="slide-text mb-6">Serverless itu <span class="highlight">reaktif</span>. Fungsi tidak berjalan
+                    terus-menerus, melainkan "tidur" sampai ada event yang menyentuhnya.</p>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-6">
+                    <p class="text-slate-700 italic">"Tidak ada traffic = tidak ada biaya. Fungsi hanya hidup saat
+                        dibutuhkan."</p>
+                </div>
+
+                <h3 class="font-bold text-lg mb-4">Contoh Alur:</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-4 bg-white p-3 rounded-lg shadow-sm">
+                        <span
+                            class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">1</span>
+                        <div>
+                            <span class="font-bold text-blue-600">Event Source:</span>
+                            <span class="text-slate-600">User upload foto ke S3 bucket</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 bg-white p-3 rounded-lg shadow-sm">
+                        <span
+                            class="bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">2</span>
+                        <div>
+                            <span class="font-bold text-orange-600">Function Triggered:</span>
+                            <span class="text-slate-600">Lambda otomatis resize gambar</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 bg-white p-3 rounded-lg shadow-sm">
+                        <span
+                            class="bg-green-100 text-green-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">3</span>
+                        <div>
+                            <span class="font-bold text-green-600">Response/Action:</span>
+                            <span class="text-slate-600">Simpan hasil ke DB, kirim notifikasi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 flex justify-center">
+                <img src="./assets/event_driven.png" class="max-h-[450px] shadow-lg rounded-xl">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Trade-offs -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 4: SERVERLESS</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Trade-offs</span>
+            </div>
+        </header>
+        <div class="slide-body flex-col">
+            <h2 class="slide-title text-center w-full">Kelebihan vs Keterbatasan Serverless</h2>
+            <p class="text-center text-slate-600 mb-8 max-w-3xl">Seperti teknologi lainnya, serverless memiliki
+                trade-off. Penting untuk memahami kapan serverless cocok dan kapan tidak.</p>
+
+            <div class="flex gap-12 w-full">
+                <div class="flex-1 bg-green-50 p-8 rounded-2xl border border-green-200">
+                    <h3 class="text-2xl font-bold mb-6 text-green-700"><i class="fas fa-thumbs-up mr-2"></i> Kelebihan
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg">
+                            <h4 class="font-bold text-green-800">Cost Efficiency</h4>
+                            <p class="text-sm text-slate-600">Bayar hanya saat code berjalan. Ideal untuk traffic yang
+                                fluktuatif atau aplikasi dengan usage tidak konstan.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg">
+                            <h4 class="font-bold text-green-800">Auto-Scaling</h4>
+                            <p class="text-sm text-slate-600">Dari 0 ke ribuan request per detik secara otomatis. Tidak
+                                perlu konfigurasi manual.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg">
+                            <h4 class="font-bold text-green-800">Faster Time-to-Market</h4>
+                            <p class="text-sm text-slate-600">Fokus menulis business logic, bukan setup server.
+                                Development cycle lebih cepat.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 bg-red-50 p-8 rounded-2xl border border-red-200">
+                    <h3 class="text-2xl font-bold mb-6 text-red-700"><i class="fas fa-thumbs-down mr-2"></i>
+                        Keterbatasan</h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg">
+                            <h4 class="font-bold text-red-800">Cold Start Latency</h4>
+                            <p class="text-sm text-slate-600">Fungsi yang lama tidak dipanggil butuh waktu "bangun"
+                                (~100ms-3s). Bisa jadi masalah untuk real-time apps.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg">
+                            <h4 class="font-bold text-red-800">Vendor Lock-in</h4>
+                            <p class="text-sm text-slate-600">Kode bergantung pada API spesifik provider (AWS, GCP).
+                                Migrasi antar cloud tidak mudah.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg">
+                            <h4 class="font-bold text-red-800">Debugging Complexity</h4>
+                            <p class="text-sm text-slate-600">Sistem terdistribusi lebih sulit di-debug. Butuh alat
+                                observability khusus.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================================
+         BAGIAN 5: BIG PICTURE
+         ================================================================================= -->
+
+    <!-- Slide 11: Arsitektur Modern -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 5: ARSITEKTUR</span>
+                <span class="brand-font font-bold text-xl text-slate-800">End-to-End View</span>
+            </div>
+        </header>
+        <div class="slide-body flex-col">
+            <h2 class="slide-title text-center w-full">Arsitektur Cloud Modern</h2>
+            <p class="text-center text-slate-600 mb-6 max-w-4xl">Inilah gambaran lengkap bagaimana komponen-komponen
+                cloud saling terhubung membentuk sistem aplikasi modern yang scalable dan maintainable.</p>
+
+            <!-- User Provided Image -->
+            <div class="w-full flex justify-center mb-8">
+                <img src="./assets/modern_architecture.png"
+                    class="max-h-[320px] shadow-lg rounded-xl border border-slate-200" alt="Modern Cloud Architecture">
+            </div>
+
+            <div class="grid grid-cols-4 gap-6 w-full max-w-6xl">
+                <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-200">
+                    <i class="fas fa-desktop text-blue-500 text-3xl mb-3"></i>
+                    <h4 class="font-bold text-blue-700 mb-1">Frontend</h4>
+                    <p class="text-xs text-slate-600">React/Next.js di-host di Vercel/Netlify. Static files di CDN
+                        global untuk kecepatan akses.</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-xl text-center border border-orange-200">
+                    <i class="fas fa-door-open text-orange-500 text-3xl mb-3"></i>
+                    <h4 class="font-bold text-orange-700 mb-1">API Gateway</h4>
+                    <p class="text-xs text-slate-600">Pintu masuk tunggal. Handle routing, auth, rate limiting sebelum
+                        request sampai ke function.</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-xl text-center border border-orange-200">
+                    <i class="fas fa-bolt text-orange-500 text-3xl mb-3"></i>
+                    <h4 class="font-bold text-orange-700 mb-1">Serverless Functions</h4>
+                    <p class="text-xs text-slate-600">Lambda/Cloud Functions. Eksekusi business logic. Scale otomatis
+                        dari 0 ke ribuan.</p>
+                </div>
+                <div class="bg-slate-100 p-4 rounded-xl text-center border border-slate-300">
+                    <i class="fas fa-database text-slate-600 text-3xl mb-3"></i>
+                    <h4 class="font-bold text-slate-700 mb-1">Backend Services</h4>
+                    <p class="text-xs text-slate-600">Firebase/MongoDB untuk DB. S3 untuk storage. Auth0/Cognito untuk
+                        authentication.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Platform Selection -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 5: ARSITEKTUR</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Platform Workshop</span>
+            </div>
+        </header>
+        <div class="slide-body flex-col">
+            <h2 class="slide-title text-center w-full">Platform yang Akan Kita Gunakan</h2>
+            <p class="text-center text-slate-600 mb-8 max-w-4xl">Tiga platform terbaik di kelasnya, masing-masing dengan
+                keunggulan unik untuk serverless development.</p>
+
+            <div class="grid grid-cols-3 gap-8 w-full">
+                <div
+                    class="card flex flex-col items-center text-center hover:scale-105 transition border-t-4 border-orange-500">
+                    <i class="fab fa-aws text-[#FF9900] text-6xl mb-6"></i>
+                    <h3 class="font-bold text-lg mb-2">AWS Lambda</h3>
+                    <p class="text-sm text-slate-600">Standar industri FaaS. Power & fleksibilitas maksimal. Market
+                        leader dengan ekosistem terlengkap.</p>
+                </div>
+                <div
+                    class="card flex flex-col items-center text-center hover:scale-105 transition bg-slate-900 text-white border-t-4 border-white">
+                    <i class="fas fa-triangle-exclamation text-white text-6xl mb-6"></i>
+                    <h3 class="font-bold text-lg mb-2">Vercel</h3>
+                    <p class="text-sm text-slate-400">Best Developer Experience (DX). Integrasi frontend + backend
+                        paling seamless saat ini. Git-based workflow.</p>
+                </div>
+                <div
+                    class="card flex flex-col items-center text-center hover:scale-105 transition border-t-4 border-yellow-500">
+                    <i class="fab fa-google text-[#FFCA28] text-6xl mb-6"></i>
+                    <h3 class="font-bold text-lg mb-2">Firebase</h3>
+                    <p class="text-sm text-slate-600">King of BaaS (Backend as a Service). Realtime database trigger &
+                        Auth ready. Perfect untuk rapid prototyping.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================================
+         BAGIAN 6: TRANSISI WORKSHOP
+         ================================================================================= -->
+
+    <!-- Slide 13: Peran GitHub -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 6: TRANSISI</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Role of GitHub</span>
+            </div>
+            <i class="fab fa-github text-3xl"></i>
+        </header>
+        <div class="slide-body gap-12">
+            <div class="flex-1">
+                <h2 class="slide-title">Jantungnya CI/CD</h2>
+                <p class="slide-text mb-6">Di era modern, Anda tidak upload file lewat FTP. Anda <span
+                        class="monospaced font-bold bg-slate-200 px-2 py-1 rounded text-sm">git push</span>.</p>
+                <div class="bg-white p-6 rounded-xl border border-slate-200">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white"><i
+                                class="fas fa-check"></i></div>
+                        <span class="font-bold">1. Version Control</span>
+                    </div>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white"><i
+                                class="fas fa-check"></i></div>
+                        <span class="font-bold">2. Trigger Deployment</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1">
+                <div class="bg-slate-900 text-green-400 p-6 rounded-xl font-mono text-sm leading-relaxed shadow-2xl">
+                    <p>$ git add .</p>
+                    <p>$ git commit -m "feat: add new functions"</p>
+                    <p>$ git push origin main</p>
+                    <br>
+                    <p class="text-white">... GitHub webhook triggers Vercel</p>
+                    <p class="text-white">... Building...</p>
+                    <p class="text-white">... <span class="text-green-400">Deployed Successfully!</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: Mapping Lab -->
+    <div class="slide theme-content">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 6: TRANSISI</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Roadmap Workshop</span>
+            </div>
+        </header>
+        <div class="slide-body flex-col">
+            <h2 class="slide-title mb-10">4 Lab Utama Hari Ini</h2>
+            <div class="w-full space-y-4">
+                <div class="flex items-center gap-6 p-4 bg-white border-l-8 border-orange-500 shadow-sm">
+                    <span class="font-bold text-orange-600 w-16">LAB 1</span>
+                    <span class="font-bold text-slate-800 w-48">AWS Lambda</span>
+                    <span class="text-slate-600 flex-1">Memahami dasar FaaS manual & API Gateway.</span>
+                </div>
+                <div class="flex items-center gap-6 p-4 bg-white border-l-8 border-black shadow-sm">
+                    <span class="font-bold text-slate-900 w-16">LAB 2</span>
+                    <span class="font-bold text-slate-800 w-48">Vercel & Next.js</span>
+                    <span class="text-slate-600 flex-1">Automated CI/CD deployment flow.</span>
+                </div>
+                <div class="flex items-center gap-6 p-4 bg-white border-l-8 border-yellow-500 shadow-sm">
+                    <span class="font-bold text-yellow-600 w-16">LAB 3</span>
+                    <span class="font-bold text-slate-800 w-48">Firebase</span>
+                    <span class="text-slate-600 flex-1">Bekerja dengan Event-Trigger & Database.</span>
+                </div>
+                <div class="flex items-center gap-6 p-4 bg-white border-l-8 border-purple-500 shadow-sm">
+                    <span class="font-bold text-purple-600 w-16">LAB 4</span>
+                    <span class="font-bold text-slate-800 w-48">Integration</span>
+                    <span class="text-slate-600 flex-1">Menghubungkan Frontend dengan Backend API.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================================
+         BAGIAN 7: WORKSHOP (OVERVIEW & LAB)
+         ================================================================================= -->
+
+    <!-- Slide 15: Workshop Requirements -->
+    <div class="slide theme-lab">
+        <header class="slide-header">
+            <div>
+                <span class="section-tag">BAGIAN 7: WORKSHOP</span>
+                <span class="brand-font font-bold text-xl text-slate-800">Persiapan Workshop</span>
+            </div>
+            <i class="fas fa-clipboard-check text-orange-500 text-2xl"></i>
+        </header>
+        <div class="slide-body">
+            <div class="flex-1">
+                <h2 class="slide-title">Requirements</h2>
+                <p class="slide-text mb-6">Pastikan Anda sudah menyiapkan hal-hal berikut sebelum memulai sesi praktik:
+                </p>
+
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4 p-4 bg-white rounded-lg shadow-sm border border-slate-100">
+                        <i class="fab fa-github text-2xl text-slate-800 mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Akun GitHub</h4>
+                            <p class="text-sm text-slate-600">Untuk version control dan trigger deployment otomatis.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 p-4 bg-white rounded-lg shadow-sm border border-slate-100">
+                        <i class="fab fa-aws text-2xl text-orange-500 mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Akun AWS (Free Tier)</h4>
+                            <p class="text-sm text-slate-600">Untuk membuat Lambda functions dan API Gateway.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 p-4 bg-white rounded-lg shadow-sm border border-slate-100">
+                        <i class="fab fa-google text-2xl text-yellow-500 mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Akun Google/Firebase</h4>
+                            <p class="text-sm text-slate-600">Untuk setup Firebase project dan Cloud Functions.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 p-4 bg-white rounded-lg shadow-sm border border-slate-100">
+                        <i class="fas fa-laptop-code text-2xl text-blue-500 mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Node.js & VS Code</h4>
+                            <p class="text-sm text-slate-600">Terinstall di laptop Anda (Node.js v18+ recommended).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1">
+                <h3 class="font-bold text-xl text-slate-800 mb-4"><i
+                        class="fas fa-code-branch text-orange-500 mr-2"></i>Clone Repository</h3>
+                <p class="text-slate-600 mb-4">Semua starter code dan panduan lengkap tersedia di repository workshop:
+                </p>
+
+                <div class="bg-slate-900 text-white p-6 rounded-xl font-mono text-sm shadow-xl mb-6">
+                    <p class="text-slate-400 mb-2"># Clone repository workshop</p>
+                    <p class="text-green-400">$ git clone https://github.com/[YOUR-REPO]/serverless-workshop.git</p>
+                    <p class="text-green-400">$ cd serverless-workshop</p>
+                </div>
+
+                <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+                    <h4 class="font-bold text-orange-700 mb-2"><i class="fas fa-folder-open mr-2"></i>Struktur Labs:
+                    </h4>
+                    <ul class="text-sm text-slate-700 space-y-1 font-mono">
+                        <li>📁 labs/lab1-aws-lambda</li>
+                        <li>📁 labs/lab2-vercel</li>
+                        <li>📁 labs/lab3-firebase</li>
+                        <li>📁 labs/lab4-integration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 16: Overview & Target -->
+    <div class="slide theme-lab items-center justify-center">
+        <div class="text-center">
+            <div
+                class="bg-orange-500 text-white w-24 h-24 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-lg animate-bounce">
+                <i class="fas fa-laptop-code"></i>
+            </div>
+            <h1 class="text-5xl font-extrabold text-slate-800 mb-6 font-montserrat">Saatnya Praktik!</h1>
+            <p class="text-2xl text-slate-600 max-w-2xl mx-auto">
+                "90 menit ke depan, laptop Anda akan menjadi pusat komando cloud."
+            </p>
+            <div class="mt-8 inline-block bg-white px-8 py-4 rounded-xl shadow border border-orange-200">
+                <span class="font-bold text-lg text-orange-600">Target Akhir:</span>
+                <span class="text-slate-700 ml-2">URL Publik yang bisa diakses dari HP Anda.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 16: Lab 1 (AWS) -->
+    <div class="slide theme-lab">
+        <header class="slide-header">
+            <span class="brand-font font-bold text-xl text-slate-800">Lab 1: AWS Lambda</span>
+        </header>
+        <div class="slide-body">
+            <div class="flex-1">
+                <h2 class="slide-title">Langkah Pengerjaan</h2>
+                <ol class="list-decimal pl-6 space-y-4 text-lg text-slate-700">
+                    <li class="pl-2"><span class="font-bold">Login AWS Console:</span> Masuk ke dashboard dan pilih
+                        Region <strong>Singapore (ap-southeast-1)</strong>.</li>
+                    <li class="pl-2"><span class="font-bold">Create Function:</span> Pilih "Author from scratch", beri
+                        nama <code class="bg-white px-2 rounded border">hello-function</code>, Runtime: <strong>Node.js
+                            20.x</strong>.</li>
+                    <li class="pl-2"><span class="font-bold">Write Code:</span> Copy-paste kode dari folder starter ke
+                        code editor Lambda.</li>
+                    <li class="pl-2"><span class="font-bold">Add Trigger:</span> Tambahkan <strong>API Gateway</strong>
+                        → Create new HTTP API → Security: Open.</li>
+                    <li class="pl-2"><span class="font-bold">Test:</span> Klik URL API Gateway yang muncul untuk melihat
+                        hasil response JSON di browser.</li>
+                </ol>
+            </div>
+            <div class="flex-1 flex justify-center">
+                <i class="fab fa-aws text-[#FF9900] text-[200px]"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Lab 2 (Vercel) -->
+    <div class="slide theme-lab">
+        <header class="slide-header">
+            <span class="brand-font font-bold text-xl text-slate-800">Lab 2: Vercel</span>
+        </header>
+        <div class="slide-body">
+            <div class="flex-1">
+                <h2 class="slide-title">Langkah Pengerjaan</h2>
+                <ol class="list-decimal pl-6 space-y-4 text-lg text-slate-700">
+                    <li class="pl-2"><span class="font-bold">Prepare Repo:</span> Fork/Clone repository starter code
+                        Next.js yang disediakan ke akun GitHub Anda.</li>
+                    <li class="pl-2"><span class="font-bold">Vercel Dashboard:</span> Login ke Vercel → Klik
+                        <strong>"Add New Project"</strong>.
+                    </li>
+                    <li class="pl-2"><span class="font-bold">Import Git:</span> Pilih repository yang baru saja Anda
+                        fork.</li>
+                    <li class="pl-2"><span class="font-bold">Deploy:</span> Biarkan setting default, klik "Deploy".
+                        Tunggu ~1 menit.</li>
+                    <li class="pl-2"><span class="font-bold">CI/CD Demo:</span> Edit file <code
+                            class="bg-white px-2 rounded border">page.jsx</code> di lokal, commit & push, lalu lihat
+                        Vercel me-rebuild otomatis.</li>
+                </ol>
+            </div>
+            <div class="flex-1 flex justify-center">
+                <i class="fas fa-triangle-exclamation text-black text-[200px]"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 18: Lab 3 (Firebase) -->
+    <div class="slide theme-lab">
+        <header class="slide-header">
+            <span class="brand-font font-bold text-xl text-slate-800">Lab 3: Firebase</span>
+        </header>
+        <div class="slide-body">
+            <div class="flex-1">
+                <h2 class="slide-title">Langkah Pengerjaan</h2>
+                <ol class="list-decimal pl-6 space-y-4 text-lg text-slate-700">
+                    <li class="pl-2"><span class="font-bold">Create Project:</span> Buka Firebase Console → Buat project
+                        baru (matikan Analytics).</li>
+                    <li class="pl-2"><span class="font-bold">Init CLI:</span> Di terminal lokal, jalankan <code
+                            class="bg-white px-2 rounded border">firebase login</code> lalu <code
+                            class="bg-white px-2 rounded border">firebase init functions</code>.</li>
+                    <li class="pl-2"><span class="font-bold">Write Function:</span> Buka file <code
+                            class="bg-white px-2 rounded border">functions/index.js</code> dan buat fungsi trigger <code
+                            class="bg-white px-2 rounded border">onDocumentCreated</code>.</li>
+                    <li class="pl-2"><span class="font-bold">Deploy:</span> Jalankan perintah <code
+                            class="bg-white px-2 rounded border">firebase deploy --only functions</code>.</li>
+                    <li class="pl-2"><span class="font-bold">Trigger Event:</span> Buat dokumen baru di Firestore
+                        Database dan lihat Logs untuk verifikasi fungsi berjalan.</li>
+                </ol>
+            </div>
+            <div class="flex-1 flex justify-center">
+                <i class="fab fa-google text-yellow-500 text-[200px]"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 19: Lab 4 (Integration) -->
+    <div class="slide theme-lab">
+        <header class="slide-header">
+            <span class="brand-font font-bold text-xl text-slate-800">Lab 4: Integration</span>
+        </header>
+        <div class="slide-body">
+            <div class="flex-1">
+                <h2 class="slide-title">Langkah Pengerjaan</h2>
+                <ol class="list-decimal pl-6 space-y-4 text-lg text-slate-700">
+                    <li class="pl-2"><span class="font-bold">Open Test Page:</span> Buka file <code
+                            class="bg-white px-2 rounded border">integration-test.html</code> (disediakan) di browser.
+                    </li>
+                    <li class="pl-2"><span class="font-bold">Input URLs:</span> Masukkan URL API Gateway (dari Lab 1)
+                        dan URL Vercel (dari Lab 2).</li>
+                    <li class="pl-2"><span class="font-bold">Test CORS:</span> Klik tombol "Test Endpoint". Jika merah,
+                        Anda harus menambahkan Header CORS di Lambda.</li>
+                    <li class="pl-2"><span class="font-bold">Fix CORS:</span> Update kode Lambda untuk return header
+                        <code class="bg-white px-2 rounded border">Access-Control-Allow-Origin: *</code>.
+                    </li>
+                    <li class="pl-2"><span class="font-bold">Validasi:</span> Test ulang hingga muncul status hijau
+                        (Success 200).</li>
+                </ol>
+            </div>
+            <div class="flex-1 flex justify-center">
+                <i class="fas fa-plug text-purple-600 text-[200px]"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================================
+         BAGIAN 8: PENUTUP & REFLEKSI
+         ================================================================================= -->
+
+
+    <!-- Slide 22: Penutup -->
+    <div class="slide theme-cover items-center justify-center relative">
+        <div class="z-10 text-center max-w-4xl">
+            <h1 class="font-extrabold text-6xl mb-6 font-montserrat">Terima Kasih</h1>
+            <h2 class="text-2xl text-orange-400 uppercase tracking-widest mb-12">Q & A Session</h2>
+
+            <div
+                class="bg-white/10 backdrop-blur p-8 rounded-2xl border border-white/20 text-left grid grid-cols-2 gap-8">
+                <div>
+                    <h4 class="font-bold mb-2">Resource Materi:</h4>
+                    <p class="text-sm text-blue-200">github.com/ubsi-workshop/serverless-2026</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Controls -->
+    <div class="slide-counter shadow-sm border border-slate-200">
+        <span id="currentSlide">1</span> / <span id="totalSlides">21</span>
+    </div>
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+        <button class="nav-btn" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="toc-bar" id="tocBar"></div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const tocBar = document.getElementById('tocBar');
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        // Generate TOC segments
+        for (let i = 0; i < totalSlides; i++) {
+            const segment = document.createElement('div');
+            segment.classList.add('toc-segment');
+            tocBar.appendChild(segment);
+        }
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+
+            currentSlide = (n + totalSlides) % totalSlides;
+
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+
+            // Update TOC
+            const segments = document.querySelectorAll('.toc-segment');
+            segments.forEach((seg, idx) => {
+                seg.classList.remove('active', 'past');
+                if (idx < currentSlide) seg.classList.add('past');
+                if (idx === currentSlide) seg.classList.add('active');
+            });
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+
+</html>

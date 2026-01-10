@@ -62,8 +62,8 @@ Lihat [Setup Guide](./SETUP_GUIDE.md) untuk detail lengkap.
 ### Clone Repository
 
 ```bash
-git clone <repository-url>
-cd serverless-workshop
+git clone https://github.com/mvirgiawancr/serverless.git
+cd serverless
 ```
 
 ### Test Setup
@@ -78,19 +78,6 @@ git --version
 # Install Firebase CLI
 npm install -g firebase-tools
 ```
-
-## 📖 Workshop Flow
-
-| Waktu | Aktivitas | Durasi |
-|-------|-----------|--------|
-| 09:00-09:05 | Opening & Intro | 5 min |
-| 09:05-09:35 | **Paparan Konseptual** | 30 min |
-| 09:35-10:00 | Lab 1: AWS Lambda | 25 min |
-| 10:00-10:25 | Lab 2: Vercel | 25 min |
-| 10:25-10:30 | Break | 5 min |
-| 10:30-10:55 | Lab 3: Firebase | 25 min |
-| 10:55-11:10 | Lab 4: Integration | 15 min |
-| 11:10-11:30 | Q&A & Wrap-up | 20 min |
 
 ## 🎯 Learning Objectives
 
@@ -179,10 +166,8 @@ Jika ada pertanyaan atau issue:
 
 ## 📜 License
 
-Workshop materials untuk keperluan edukasi - UBSI 2026
+Workshop materials untuk keperluan edukasi
 
 ---
-
-**Dibuat dengan ❤️ untuk mahasiswa UBSI**
 
 **Happy Learning! 🚀**
