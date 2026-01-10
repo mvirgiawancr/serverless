@@ -227,7 +227,7 @@ curl https://your-api-url.com/hello
 # POST request with JSON body
 curl -X POST https://your-api-url.com/user \
   -H "Content-Type: application/json" \
-  -d '{"name":"Budi","email":"budi@example.com"}'
+  -d '{"name":"Virgi","email":"virgi@example.com"}'
 ```
 
 ### 3. Postman / Thunder Client

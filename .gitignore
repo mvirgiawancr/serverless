@@ -1,5 +1,6 @@
 # Ignore everything
 *
+node_modules/
 
 # But not these files/folders
 !.gitignore
@@ -8,3 +9,7 @@
 !labs/
 !labs/**
 !workshop_presentation.html
+
+# Ignore node_modules inside labs
+labs/**/node_modules/
+labs/**/.next/

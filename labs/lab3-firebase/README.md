@@ -186,7 +186,7 @@ Functions:
 
 **Buka browser atau Postman:**
 ```
-https://asia-southeast1-YOUR-PROJECT.cloudfunctions.net/createUserManual?name=Budi&email=budi@example.com
+https://asia-southeast1-YOUR-PROJECT.cloudfunctions.net/createUserManual?name=Virgi&email=virgi@example.com
 ```
 
 ✅ Response:
@@ -228,8 +228,8 @@ https://asia-southeast1-YOUR-PROJECT.cloudfunctions.net/createUserManual?name=Bu
    ✅ Anda akan lihat:
    ```
    🎉 New user created: abc123xyz
-   User data: { name: 'Budi', email: 'budi@example.com' }
-   ✅ Welcome notification sent to budi@example.com
+   User data: { name: 'Virgi', email: 'virgi@example.com' }
+   ✅ Welcome notification sent to virgi@example.com
    ```
 
 2. **Check Firestore:**
