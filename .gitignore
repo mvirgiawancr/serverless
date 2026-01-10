@@ -1,0 +1,9 @@
+# Ignore everything
+*
+
+# But not these files/folders
+!.gitignore
+!README.md
+!SETUP_GUIDE.md
+!labs/
+!labs/**
