@@ -1,6 +1,7 @@
 # Ignore everything
 *
 node_modules/
+PANDUAN_FASILITATOR.md
 
 # But not these files/folders
 !.gitignore
