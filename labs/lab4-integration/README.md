@@ -8,7 +8,7 @@ Memahami cara mengintegrasikan frontend application dengan serverless backends y
 - Testing serverless APIs dari berbagai clients
 
 ## 📋 Prerequisites
-- Sudah menyelesaikan minimal 1 lab sebelumnya (AWS Lambda atau Vercel)
+- Sudah menyelesaikan minimal 1 lab sebelumnya (Cloudflare Pages atau Vercel)
 - Browser modern (Chrome/Firefox/Edge)
 - Optional: Postman atau Thunder Client
 
@@ -81,10 +81,10 @@ Simple HTML page yang:
         <h1>🌐 Serverless API Integration Demo</h1>
         <p>Test serverless endpoints yang sudah kita deploy:</p>
         
-        <h3>AWS Lambda API:</h3>
-        <input type="text" id="lambdaUrl" placeholder="Paste Lambda API URL" style="width: 100%; padding: 10px; margin-bottom: 10px;">
-        <button onclick="testLambdaAPI()">Test GET /hello</button>
-        <button onclick="testLambdaPost()">Test POST /user</button>
+        <h3>Cloudflare Pages API:</h3>
+        <input type="text" id="cloudflareUrl" placeholder="Paste Cloudflare URL (e.g. https://your-project.pages.dev)" style="width: 100%; padding: 10px; margin-bottom: 10px;">
+        <button onclick="testCloudflareAPI()">Test GET /api/hello</button>
+        <button onclick="testCloudflarePost()">Test POST /api/user</button>
         
         <h3 style="margin-top: 30px;">Vercel API:</h3>
         <input type="text" id="vercelUrl" placeholder="Paste Vercel App URL" style="width: 100%; padding: 10px; margin-bottom: 10px;">
@@ -117,18 +117,18 @@ Simple HTML page yang:
             }
         }
 
-        // AWS Lambda Tests
-        async function testLambdaAPI() {
-            const url = document.getElementById('lambdaUrl').value;
+        // Cloudflare Pages Tests
+        async function testCloudflareAPI() {
+            const url = document.getElementById('cloudflareUrl').value;
             if (!url) {
-                alert('Please paste your Lambda API URL first!');
+                alert('Please paste your Cloudflare Pages URL first!');
                 return;
             }
 
             displayResult(null, 'loading');
 
             try {
-                const response = await fetch(`${url}/hello`);
+                const response = await fetch(`${url}/api/hello`);
                 const data = await response.json();
                 displayResult(data);
             } catch (error) {
@@ -136,24 +136,24 @@ Simple HTML page yang:
             }
         }
 
-        async function testLambdaPost() {
-            const url = document.getElementById('lambdaUrl').value;
+        async function testCloudflarePost() {
+            const url = document.getElementById('cloudflareUrl').value;
             if (!url) {
-                alert('Please paste your Lambda API URL first!');
+                alert('Please paste your Cloudflare Pages URL first!');
                 return;
             }
 
             displayResult(null, 'loading');
 
             try {
-                const response = await fetch(`${url}/user`, {
+                const response = await fetch(`${url}/api/user`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        name: 'Test User',
-                        email: 'test@example.com'
+                        name: 'Virgi',
+                        email: 'virgi@example.com'
                     })
                 });
                 const data = await response.json();
@@ -332,7 +332,7 @@ Anda sudah memahami cara mengintegrasikan frontend dengan serverless backends!
 
 ## 🔗 Complete Workshop Resources
 
-- [Lab 1: AWS Lambda](../lab1-aws-lambda/README.md)
+- [Lab 1: Cloudflare Pages](../lab1-cloudflare/README.md)
 - [Lab 2: Vercel Deployment](../lab2-vercel/README.md)
 - [Lab 3: Firebase Functions](../lab3-firebase/README.md)
 - [Setup Guide](../../SETUP_GUIDE.md)

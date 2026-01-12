@@ -1,21 +1,28 @@
-// Cloudflare Workers - User Function
+// Cloudflare Pages Functions - User API
+// Lab 1: Workshop Serverless Architecture
+
 export async function onRequest(context) {
   const { request } = context;
   
   // CORS headers
-  const corsHeaders = {
+  const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json',
   };
 
-  // Handle OPTIONS for CORS preflight
+  // Handle CORS preflight
   if (request.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
+    return new Response(null, { status: 204, headers });
+  }
+
+  // GET /api/user - Info endpoint
+  if (request.method === 'GET') {
+    return new Response(JSON.stringify({
+      message: 'User API endpoint',
+      usage: 'POST request dengan body { "name": "...", "email": "..." }'
+    }), { status: 200, headers });
   }
 
   // POST /api/user - Create user
@@ -23,60 +30,36 @@ export async function onRequest(context) {
     try {
       const body = await request.json();
       
-      // Validate input
+      // Validate
       if (!body.name || !body.email) {
         return new Response(JSON.stringify({
           error: 'Validation Error',
-          message: 'Name and email are required',
-        }), {
-          status: 400,
-          headers: corsHeaders,
-        });
+          message: 'Name dan email wajib diisi'
+        }), { status: 400, headers });
       }
 
       // Create user response
       return new Response(JSON.stringify({
         success: true,
-        message: 'User created successfully!',
+        message: 'User berhasil dibuat!',
         user: {
-          id: crypto.randomUUID(), // Built-in Web Crypto API
+          id: crypto.randomUUID(),
           name: body.name,
           email: body.email,
           createdAt: new Date().toISOString(),
-          datacenter: request.cf?.colo || 'Unknown',
-        },
-      }), {
-        status: 201,
-        headers: corsHeaders,
-      });
+          datacenter: request.cf?.colo || 'Unknown'
+        }
+      }), { status: 201, headers });
+
     } catch (error) {
       return new Response(JSON.stringify({
         error: 'Invalid JSON',
-        message: error.message,
-      }), {
-        status: 400,
-        headers: corsHeaders,
-      });
+        message: 'Request body harus valid JSON'
+      }), { status: 400, headers });
     }
   }
 
-  // GET /api/user - Get user info (demo)
-  if (request.method === 'GET') {
-    return new Response(JSON.stringify({
-      message: 'User endpoint',
-      usage: 'Send POST request with { "name": "...", "email": "..." }',
-    }), {
-      status: 200,
-      headers: corsHeaders,
-    });
-  }
-
-  // Method not allowed
   return new Response(JSON.stringify({
-    error: 'Method Not Allowed',
-    allowedMethods: ['GET', 'POST', 'OPTIONS'],
-  }), {
-    status: 405,
-    headers: corsHeaders,
-  });
+    error: 'Method Not Allowed'
+  }), { status: 405, headers });
 }

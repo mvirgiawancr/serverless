@@ -1,7 +1,7 @@
-# Lab 1: Cloudflare Pages & Workers - REST API Serverless
+# Lab 1: Cloudflare Pages - Serverless Edge Functions
 
 ## 🎯 Tujuan
-Membuat serverless REST API menggunakan Cloudflare Workers yang dapat merespons HTTP requests dengan deployment otomatis dari GitHub.
+Membuat serverless edge function menggunakan Cloudflare Pages yang berjalan di edge network global dengan deployment otomatis dari GitHub.
 
 ## ⏱️ Durasi: 25 Menit
 - 5-10 menit: Demo oleh presenter
@@ -9,276 +9,207 @@ Membuat serverless REST API menggunakan Cloudflare Workers yang dapat merespons 
 
 ## 📋 Prerequisites
 - Akun GitHub
-- Akun Cloudflare (gratis unlimited) - [Sign up di sini](https://dash.cloudflare.com/sign-up)
+- Akun Cloudflare (gratis) - [Sign up di sini](https://dash.cloudflare.com)
 
 ## 🚀 Apa yang Akan Kita Buat?
 REST API sederhana dengan endpoints:
-- `GET /api/hello` - Mengembalikan pesan hello world
-- `POST /api/user` - Menerima data user dan mengembalikan response
+- `GET /` - Landing page dengan test buttons
+- `GET /api/hello` - Hello World API
+- `POST /api/user` - Create user
+
+## 📂 Struktur Folder
+
+```
+labs/lab1-cloudflare/
+├── index.html              ← Landing page
+├── functions/
+│   └── api/
+│       ├── hello.js        ← GET/POST /api/hello
+│       └── user.js         ← GET/POST /api/user
+└── README.md               ← File ini
+```
 
 ## 📝 Step-by-Step Guide
 
 ### Step 1: Sign Up Cloudflare (2 menit)
-1. Buka https://dash.cloudflare.com/sign-up
-2. Daftar pakai **email** (tidak perlu kartu kredit!)
-3. Verify email
-4. ✅ Akun siap digunakan
+1. Buka https://dash.cloudflare.com
+2. Klik **"Sign up"**
+3. Masukkan email dan password
+4. Verifikasi email
+5. ✅ Akun siap!
 
 ### Step 2: Create Pages Project (3 menit)
 
 1. **Di Cloudflare Dashboard:**
    - Sidebar → **Workers & Pages**
-   - Klik **Create application**
-   - Tab **Pages** → **Connect to Git**
-   
+   - Klik **"Create application"**
+   - Pilih tab **"Pages"** (PENTING!)
+   - Klik **"Connect to Git"**
+
 2. **Connect GitHub:**
-   - Authorize Cloudflare untuk mengakses GitHub
-   - Pilih repository: `serverless` (yang sudah di-fork/clone)
-   
+   - Authorize Cloudflare
+   - Pilih repository: `serverless`
+
 3. **Configure Build:**
    ```
-   Project name: serverless-workshop-[nama-anda]
+   Project name: serverless-lab1
    Production branch: main
-   Build command: (kosongkan)
-   Build output directory: (kosongkan)
    Root directory: labs/lab1-cloudflare
+   Build command: (KOSONGKAN)
+   Build output directory: (KOSONGKAN)
    ```
 
-4.  **Deploy:**
-   - Klik **Save and Deploy**
-   - Tunggu ~30-60 detik
-   - ✅ Site sudah live!
+4. **Deploy:**
+   - Klik **"Save and Deploy"**
+   - Tunggu 30-60 detik
+   - ✅ Deployed!
 
 5. **Copy Project URL:**
-   - Contoh: `https://serverless-workshop-virgi.pages.dev`
+   - Contoh: `https://serverless-lab1.pages.dev`
 
-### Step 3: Buat Cloudflare Functions (8 menit)
+### Step 3: Pahami Kode (5 menit)
 
-Cloudflare Pages otomatis mendeteksi folder `functions/` sebagai serverless functions.
-
-1. **Di repository Anda, buat struktur folder:**
-   ```
-   labs/lab1-cloudflare/
-   ├── functions/
-   │   ├── api/
-   │   │   ├── hello.js
-   │   │   └── user.js
-   └── index.html (optional)
-   ```
-
-2. **Buat file `functions/api/hello.js`:**
+#### File `functions/api/hello.js`:
 
 ```javascript
 export async function onRequest(context) {
-    // Function akan jalan di Cloudflare Edge Network
-    const { request, env } = context;
-    
-    if (request.method === 'GET') {
-        return new Response(JSON.stringify({
-            message: 'Hello dari Cloudflare Edge!',
-            timestamp: new Date().toISOString(),
-            location: request.cf?.colo || 'Unknown' // Cloudflare datacenter
-        }), {
-            status: 200,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-    }
-    
-    return new Response('Method Not Allowed', { status: 405 });
-}
-```
+  const { request } = context;
+  
+  // CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+  };
 
-3. **Buat file `functions/api/user.js`:**
-
-```javascript
-export async function onRequest(context) {
-    const { request } = context;
-    
-    if (request.method !== 'POST') {
-        return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
-            status: 405,
-            headers: { 'Content-Type': 'application/json' }
-        });
-    }
-    
-    const body = await request.json();
-    
+  // GET /api/hello
+  if (request.method === 'GET') {
     return new Response(JSON.stringify({
-        message: 'User created successfully!',
-        user: {
-            name: body.name || 'Anonymous',
-            email: body.email || 'no-email@example.com',
-            id: crypto.randomUUID() // Built-in Web API
-        },
-        createdAt: new Date().toISOString()
-    }), {
-        status: 201,
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-        }
-    });
+      message: 'Hello dari Cloudflare Edge! 🚀',
+      timestamp: new Date().toISOString(),
+      datacenter: request.cf?.colo || 'Unknown'
+    }), { status: 200, headers });
+  }
 }
 ```
 
-4. **Commit & Push:**
-   ```bash
-   git add functions/
-   git commit -m "Add Cloudflare Functions"
-   git push origin main
-   ```
+**Key Points:**
+- `export async function onRequest()` - Entry point Cloudflare Pages Functions
+- `context.request` - Request object
+- `request.cf.colo` - Datacenter location (SIN, HKG, dll)
+- `new Response()` - Return HTTP response
 
-5. **Cloudflare akan auto-deploy!**
-   - Buka Cloudflare Dashboard → Pages → Your Project
-   - Tab **Deployments** → Lihat status "Building"
-   - Tunggu hingga "Published"
-   - ✅ Functions sudah live di edge network global!
+### Step 4: Test API (5 menit)
 
-### Step 4: Test Functions (5 menit)
+#### Cara 1: Buka Landing Page
+Akses `https://YOUR-PROJECT.pages.dev` di browser - klik tombol test!
 
-#### Test GET /api/hello
+#### Cara 2: Browser langsung
+```
+https://YOUR-PROJECT.pages.dev/api/hello
+```
 
-**Di Browser:**
-1. Buka: `https://YOUR-PROJECT.pages.dev/api/hello`
-2. ✅ Anda harus lihat response JSON!
-
-**Menggunakan curl:**
+#### Cara 3: curl
 ```bash
+# GET
 curl https://YOUR-PROJECT.pages.dev/api/hello
-```
 
-**Response:**
-```json
-{
-  "message": "Hello dari Cloudflare Edge!",
-  "timestamp": "2026-01-12T12:00:00Z",
-  "location": "SIN" // Singapore datacenter!
-}
-```
-
-#### Test POST /api/user
-
-**Menggunakan curl:**
-```bash
+# POST
 curl -X POST https://YOUR-PROJECT.pages.dev/api/user \
   -H "Content-Type: application/json" \
   -d '{"name":"Virgi","email":"virgi@example.com"}'
 ```
 
-**Menggunakan Postman/Thunder Client:**
-1. POST ke: `https://YOUR-PROJECT.pages.dev/api/user`
-2. Body (JSON):
-   ```json
-   {
-     "name": "Virgi",
-     "email": "virgi@example.com"
-   }
+**Expected Response GET /api/hello:**
+```json
+{
+  "message": "Hello dari Cloudflare Edge! 🚀",
+  "timestamp": "2026-01-12T12:00:00Z",
+  "datacenter": "SIN",
+  "country": "ID",
+  "runtime": "Cloudflare Workers"
+}
+```
+
+**Expected Response POST /api/user:**
+```json
+{
+  "success": true,
+  "message": "User berhasil dibuat!",
+  "user": {
+    "id": "abc123-...",
+    "name": "Virgi",
+    "email": "virgi@example.com",
+    "createdAt": "2026-01-12T12:00:00Z",
+    "datacenter": "SIN"
+  }
+}
+```
+
+### Step 5: Edit & Auto-Deploy (5 menit)
+
+1. Edit `functions/api/hello.js` - ubah message:
+   ```javascript
+   message: 'Hello dari Workshop UBSI! 🎓'
    ```
-3. Send request
-4. ✅ Status 201 + User data dengan UUID!
 
-### Step 5: Lihat Analytics & Logs (3 menit)
+2. Commit & Push:
+   ```bash
+   git add .
+   git commit -m "Update hello message"
+   git push origin main
+   ```
 
-1. Cloudflare Dashboard → Pages → Your Project
-2. Tab **Analytics**
-   - Requests per second
-   - Bandwidth usage
-   - Error rate
-3. Tab **Functions**
-   - Lihat function invocations
-   - CPU time
-   - Errors (if any)
+3. Cloudflare auto-redeploy dalam **30 detik**!
 
-✅ Real-time analytics tanpa setup apapun!
+4. Refresh browser - lihat perubahan! ✅
 
 ## 🎉 Selamat!
 
-Anda baru saja membuat REST API serverless yang jalan di **Cloudflare Edge Network** di 275+ kota worldwide!
+Anda baru saja membuat serverless edge function yang jalan di **35+ region worldwide**!
 
 ## ✨ Keunggulan Cloudflare Pages
 
-- ✅ **Gratis unlimited** requests (100k/day pada free tier)
-- ✅ **Edge network global** - ultra low latency
+- ✅ **Gratis unlimited** requests/month
+- ✅ **Edge network** - ultra low latency (300+ lokasi)
 - ✅ **Auto deploy** dari GitHub push
-- ✅ **No cold starts** - functions always warm
-- ✅ **Built-in DDoS protection**
-- ✅ **Developer-friendly** - simple API
+- ✅ **Zero config** - no build step needed
+- ✅ **Custom domains** gratis
+- ✅ **Professional** - dipakai perusahaan besar
 
 ## 💰 Pricing
 
-Cloudflare Workers Free Tier:
-- 100,000 requests per day
-- 10ms CPU time per request
+Cloudflare Pages Free Tier:
+- Unlimited requests
 - Unlimited bandwidth
+- 500 builds/month
 - No credit card required!
-
-Paid Plan:
-- $5/month untuk 10 juta requests
-- Sangat cost-effective!
 
 ## 🧹 Cleanup (Optional)
 
-Jika ingin hapus resources:
-1. Cloudflare Dashboard → Pages → Your Project
-2. Settings → Delete project
+Jika ingin hapus:
+1. Dashboard → Workers & Pages → serverless-lab1 → Settings → Delete
 
 ## 🔗 Resources
 - [Cloudflare Pages Docs](https://developers.cloudflare.com/pages/)
-- [Cloudflare Functions](https://developers.cloudflare.com/pages/platform/functions/)
-- [Workers Runtime API](https://developers.cloudflare.com/workers/runtime-apis/)
+- [Functions Guide](https://developers.cloudflare.com/pages/functions/)
+- [Routing](https://developers.cloudflare.com/pages/functions/routing/)
 
 ## ❓ Troubleshooting
 
-**Q: Function return 404?**
-- A: Pastikan folder structure `functions/api/` benar
-- A: File harus `.js` bukan `.mjs`
-- A: Cek deployment logs di Cloudflare Dashboard
+**Q: Deploy error "Missing entry-point"?**
+- A: Pastikan pilih **Pages** bukan Workers. Build command harus kosong.
 
-**Q: Function tidak update setelah push?**
-- A: Tunggu deployment selesai (30-60 detik)
-- A: Hard refresh browser (Ctrl+Shift+R)
-- A: Clear Cloudflare cache (Dashboard → Caching → Purge Everything)
+**Q: 404 pada /api/hello?**
+- A: Cek struktur folder `functions/api/hello.js` - harus persis seperti ini.
 
 **Q: CORS error?**
-- A: Pastikan header `Access-Control-Allow-Origin: *` ada di semua responses
+- A: Pastikan ada header `Access-Control-Allow-Origin: *`
 
-**Q: "account_limit_exceeded"?**
-- A: Free tier limit 100k requests/day
-- A: Reset setiap 24 jam (UTC timezone)
-
-## 🔥 Advanced Tips
-
-### Environment Variables
-Tambahkan di Dashboard → Settings → Environment variables:
-```
-API_KEY=your_secret_key
-DB_URL=your_database_url
-```
-
-Access di code:
-```javascript
-export async function onRequest(context) {
-    const { env } = context;
-    const apiKey = env.API_KEY; // Environment variable
-    // ...
-}
-```
-
-### Middleware Pattern
-Buat `functions/_middleware.js` untuk global middleware:
-```javascript
-export async function onRequest(context) {
-    // Runs before all functions
-    console.log('Request:', context.request.url);
-    return context.next();
-}
-```
+**Q: Dashboard loading lama?**
+- A: Normal di awal. Coba refresh atau pakai browser lain.
 
 ---
 
 **Next:** [Lab 2 - Vercel Deployment](../lab2-vercel/README.md)
 
-**Cloudflare is FAST! ⚡ Selamat mencoba!**
+**Cloudflare is POWERFUL! ☁️ Selamat mencoba!**
