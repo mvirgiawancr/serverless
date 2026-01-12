@@ -4,7 +4,8 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const path = url.pathname;
+    // Normalize path: replace double slashes with single slash and remove trailing slash
+    const path = url.pathname.replace(/\/+/g, '/').replace(/\/$/, '');
     
     // CORS headers
     const corsHeaders = {
