@@ -86,7 +86,7 @@
         /* Header */
         .slide-header {
             background: white;
-            padding: 1rem 3rem;
+            padding: 1.2rem 3rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -94,28 +94,28 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             z-index: 20;
             flex-shrink: 0;
-            height: 90px;
+            height: 100px;
         }
 
         .section-tag {
-            font-size: 0.8rem;
+            font-size: 1rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             color: #94a3b8;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.3rem;
             display: block;
         }
 
         /* Main Content Area */
         .slide-body {
             flex: 1;
-            padding: 2.5rem 4rem;
-            max-width: 1600px;
+            padding: 3rem 4rem;
+            max-width: 1800px;
             margin: 0 auto;
             width: 100%;
             display: flex;
-            gap: 4rem;
+            gap: 3rem;
             align-items: center;
             overflow: hidden;
         }
@@ -129,15 +129,15 @@
         /* Typography */
         .slide-title {
             font-weight: 800;
-            font-size: 2.8rem;
+            font-size: 3.5rem;
             margin-bottom: 1.5rem;
             line-height: 1.1;
             color: #1E3A8A;
         }
 
         .slide-text {
-            font-size: 1.25rem;
-            line-height: 1.6;
+            font-size: 1.5rem;
+            line-height: 1.7;
             color: #475569;
         }
 
@@ -150,7 +150,7 @@
         .card {
             background: white;
             border-radius: 1rem;
-            padding: 1.5rem;
+            padding: 2rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             border: 1px solid #e2e8f0;
         }
@@ -161,10 +161,10 @@
         }
 
         .bullet-list li {
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
             display: flex;
             align-items: flex-start;
-            font-size: 1.2rem;
+            font-size: 1.6rem;
         }
 
         .bullet-icon {
@@ -243,6 +243,35 @@
         .toc-segment.past {
             background: #1E3A8A;
         }
+
+        /* Global text size increases */
+        p {
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            font-size: 2rem;
+        }
+
+        h4 {
+            font-size: 1.6rem;
+        }
+
+        .text-sm {}
+
+        .text-xs {}
+
+        .text-lg {}
+
+        .text-xl {}
+
+        .text-2xl {}
+
+        .text-3xl {}
+
+        .text-4xl {}
+
+        .text-5xl {}
     </style>
 </head>
 
@@ -273,14 +302,18 @@
                 Cloud Computing &<br>Serverless Architecture
             </h1>
 
-            <div class="grid grid-cols-2 gap-6 text-sm md:text-base max-w-3xl mx-auto border-t border-white/20 pt-8">
+            <div class="grid grid-cols-3 gap-6 text-sm md:text-base max-w-4xl mx-auto border-t border-white/20 pt-8">
                 <div>
                     <i class="fas fa-calendar-alt text-orange-400 mb-2 text-xl block"></i>
                     <span class="font-bold block">14 Januari 2026</span>
                 </div>
                 <div>
                     <i class="fas fa-user-tie text-orange-400 mb-2 text-xl block"></i>
-                    <span class="font-bold block"> Assoc. Prof. Dr. Irawan Afrianto, S.T, M.T</span>
+                    <span class="font-bold block">Assoc. Prof. Dr. Irawan Afrianto, S.T, M.T</span>
+                </div>
+                <div>
+                    <i class="fas fa-user text-orange-400 mb-2 text-xl block"></i>
+                    <span class="font-bold block">Moch Virgiawan Caesar Ridollohi</span>
                 </div>
             </div>
         </div>
