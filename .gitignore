@@ -10,7 +10,7 @@ PANDUAN_FASILITATOR.md
 !labs/
 !labs/**
 !workshop_presentation.html
-
+!workshop_presentation.pptx
 # Ignore node_modules inside labs
 labs/**/node_modules/
 labs/**/.next/

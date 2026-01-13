@@ -218,4 +218,4 @@ Jika punya domain sendiri:
 
 ---
 
-**Next:** [Lab 3 - Firebase Functions](../lab3-firebase/README.md)
+**Next:** [Lab 3 - Supabase Edge Functions](../lab3-supabase/README.md)

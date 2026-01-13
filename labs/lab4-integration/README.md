@@ -334,5 +334,5 @@ Anda sudah memahami cara mengintegrasikan frontend dengan serverless backends!
 
 - [Lab 1: Cloudflare Pages](../lab1-cloudflare/README.md)
 - [Lab 2: Vercel Deployment](../lab2-vercel/README.md)
-- [Lab 3: Firebase Functions](../lab3-firebase/README.md)
+- [Lab 3: Supabase Edge Functions](../lab3-supabase/README.md)
 - [Setup Guide](../../SETUP_GUIDE.md)
